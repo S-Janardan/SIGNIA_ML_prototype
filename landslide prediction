@@ -1,0 +1,185 @@
+#Machine learning model for landslide prediction
+
+#importing the required packages, libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+
+#forming the dataframe
+df = pd.read_csv("landslide_dataset.csv")
+model = LogisticRegression()
+
+#making different combinations of available features to check accuracy for each combination
+x1 = df[['rainfall','slope of the land','quarrying activities','deforestation','construction activities']]
+x2 = df[['soil texture','rainfall','quarrying activities','deforestation','construction activities']]
+x3 = df[['soil texture','rainfall','slope of the land','deforestation','construction activities']]
+x4 = df[['soil texture','rainfall','slope of the land','quarrying activities','construction activities']]
+x5 = df[['soil texture','rainfall','slope of the land','quarrying activities','deforestation']]
+x = df.iloc[:,:-1]
+
+#splitting the features using get_dummies() function
+dummy1 = pd.get_dummies(x1, prefix=['slope of the land','quarrying activities','deforestation','construction activities'])
+dummy2 = pd.get_dummies(x2, prefix=['soil texture','quarrying activities','deforestation','construction activities'])
+dummy3 = pd.get_dummies(x3, prefix=['soil texture', 'slope of the land','deforestation','construction activities'])
+dummy4 = pd.get_dummies(x4, prefix=['soil texture', 'slope of the land','quarrying activities','construction activities'])
+dummy5 = pd.get_dummies(x5, prefix=['soil texture', 'slope of the land','quarrying activities','deforestation'])
+dummy = pd.get_dummies(x, prefix=['soil texture', 'slope of the land','quarrying activities','deforestation','construction activities'])
+
+combination_of_features = ['excluding soil texture', 'excluding slope of the land', 'excluding quarrying activities', 'excluding deforestation', 'excluding construction activities', 'including all available features']
+list_of_dummies = [dummy1,dummy2,dummy3,dummy4,dummy5,dummy]
+list_of_accuracy = []
+
+#plotting graphs for each feature to chance of landslide
+
+#Effect of type of soil in landslide prone areas
+plt.title("Effect of type of soil in landslide prone areas")
+j = 0
+sandy_count = 0
+silty_count = 0
+clay_count = 0
+for i in df['soil texture']:
+  if df.iloc[j,-1] == 1:
+    if df.iloc[j,0] == 'sandy loam':
+      sandy_count += 1
+    elif df.iloc[j,0] == 'silty loam':
+      silty_count += 1
+    else:
+      clay_count += 1
+  j += 1
+x_soil = np.array(['sandy loam','silty loam','clay fine loam'])
+y_soil = np.array([sandy_count,silty_count,clay_count])
+plt.bar(x_soil,y_soil)
+plt.xlabel("Type of soil")
+plt.ylabel("Count of landslide")
+plt.show()
+
+
+#Effect of slope of land in landslide prone areas
+plt.title("Effect of slope of land in landslide prone areas")
+j = 0
+horizontal_count = 0
+very_flat_count = 0
+flat_count = 0
+moderate_count = 0
+steep_count = 0
+for i in df['slope of the land']:
+  if df.iloc[j,-1] == 1:
+    if df.iloc[j,1] == 'horizontal':
+      horizontal_count += 1
+    elif df.iloc[j,1] == 'very flat':
+      very_flat_count += 1
+    elif df.iloc[j,1] == 'flat':
+      flat_count += 1
+    elif df.iloc[j,1] == 'moderate':
+      moderate_count +=1
+    else:
+      steep_count += 1
+  j += 1
+x_slope = np.array(['horizontal','very flat','flat','moderate','steep'])
+y_slope = np.array([horizontal_count,very_flat_count,flat_count,moderate_count,steep_count])
+plt.bar(x_slope,y_slope)
+plt.xlabel("Slope of land")
+plt.ylabel("Count of landslide")
+plt.show()
+
+
+#Rainfall vs Chance of landslide
+plt.title("Rainfall vs Chance of landslide")
+x_rainfall = df['rainfall']
+y_rainfall = df['chance of landslide']
+plt.plot(x_rainfall,y_rainfall,'*')
+plt.xlabel("Rainfall in cm")
+plt.ylabel("Chance of landslide")
+plt.show()
+
+
+#Effect of quarrying in landslide prone areas
+plt.title("Effect of quarrying in landslide prone areas")
+j = 0
+mild_count = 0
+moderae_count = 0
+severe_count = 0
+for i in df['quarrying activities']:
+  if df.iloc[j,-1] == 1:
+    if df.iloc[j,3] == 'mild':
+      mild_count += 1
+    elif df.iloc[j,3] == 'moderate':
+      moderate_count += 1
+    else:
+      severe_count += 1
+  j += 1
+x_quarry = np.array(['mild','moderate','severe'])
+y_quarry = np.array([mild_count,moderate_count,severe_count])
+plt.bar(x_quarry,y_quarry)
+plt.xlabel("Quarrying activities")
+plt.ylabel("Count of landslide")
+plt.show()
+
+
+#Effect of deforestation in landslide prone areas
+plt.title("Effect of deforestation in landslide prone areas")
+j = 0
+low_d_count = 0
+medium_d_count = 0
+high_d_count = 0
+for i in df['deforestation']:
+  if df.iloc[j,-1] == 1:
+    if df.iloc[j,4] == 'low':
+      low_d_count += 1
+    elif df.iloc[j,4] == 'medium':
+      medium_d_count += 1
+    else:
+      high_d_count += 1
+  j += 1
+x_deforestation = np.array(['low','medium','high'])
+y_deforestation = np.array([low_d_count,medium_d_count,high_d_count])
+plt.bar(x_deforestation,y_deforestation)
+plt.xlabel("Deforestation")
+plt.ylabel("Count of landslide")
+plt.show()
+
+
+#Effect of construction activities in landslide prone areas
+plt.title("Effect of construction activities in landslide prone areas")
+j = 0
+low_c_count = 0
+medium_c_count = 0
+high_c_count = 0
+for i in df['construction activities']:
+  if df.iloc[j,-1] == 1:
+    if df.iloc[j,5] == 'low':
+      low_c_count += 1
+    elif df.iloc[j,5] == 'medium':
+      medium_c_count += 1
+    else:
+      high_c_count += 1
+  j += 1
+x_construction = np.array(['low','medium','high'])
+y_construction = np.array([low_c_count,medium_c_count,high_c_count])
+plt.bar(x_construction,y_construction)
+plt.xlabel("Construction activities")
+plt.ylabel("Count of landslide")
+plt.show()
+
+#testing the accuracy for various combinations of features
+for i in list_of_dummies:
+  df_X = i.iloc[:,:-1]
+  df_Y = df.iloc[:,-1]
+  x_train, x_test, y_train, y_test = train_test_split(df_X, df_Y, test_size = 0.3)
+  model.fit(x_train,y_train)
+  y_test=np.array(y_test)
+  accuracy = model.score(x_test, y_test)
+  list_of_accuracy.append(accuracy)
+
+print("The accuracy for various combinations of available features is:")
+print(list_of_accuracy)
+
+max = 0
+for i in range(len(list_of_accuracy)):
+  if list_of_accuracy[i] > max:
+    max = list_of_accuracy[i]
+    max_index = i
+
+print("From the combinations, maximum accuracy is given by ", combination_of_features[i], " with an accuracy of ", max)
